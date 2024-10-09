@@ -1,0 +1,45 @@
+.data
+format: .asciz "La raíz cuadrada de %d es %d\n"
+
+.text
+.global main
+
+@ Función para calcular la raíz cuadrada entera
+sqrt:
+    push {r4-r7, lr}
+    mov r4, r0          @ r4 = n (número de entrada)
+    mov r5, #0          @ r5 = raíz
+    mov r6, #1          @ r6 = delta
+    mov r7, #0          @ r7 = sum
+
+sqrt_loop:
+    add r7, r7, r6      @ sum += delta
+    add r6, r6, #2      @ delta += 2
+    add r5, r5, #1      @ raíz++
+    cmp r7, r4
+    ble sqrt_loop       @ si sum <= n, continuar el bucle
+
+    sub r5, r5, #1      @ ajustar la raíz final
+    mov r0, r5          @ devolver la raíz en r0
+    pop {r4-r7, pc}
+
+main:
+    push {r4, r5, lr}
+    mov r4, #9          @ Iniciar con 9
+
+main_loop:
+    mov r0, r4
+    bl sqrt             @ Calcular la raíz cuadrada
+    mov r5, r0          @ Guardar el resultado
+
+    ldr r0, =format     @ Cargar la cadena de formato
+    mov r1, r4          @ Primer argumento: el número
+    mov r2, r5          @ Segundo argumento: su raíz cuadrada
+    bl printf           @ Llamar a printf
+
+    add r4, r4, #1      @ Incrementar el número
+    cmp r4, #26         @ Comparar con 26 (25 + 1)
+    bne main_loop       @ Si no es igual, continuar el bucle
+
+    mov r0, #0          @ Código de salida 0
+    pop {r4, r5, pc}    @ Restaurar registros y retornar

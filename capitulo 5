@@ -1,0 +1,47 @@
+.data
+format_sum: .asciz "La suma de los 35 enteros es: %d\n"
+format_number: .asciz "Número %d: %d\n"
+
+.text
+.global main
+
+main:
+    push {r4-r8, lr}
+
+    @ Inicializar variables
+    mov r4, #35         @ Contador de números
+    mov r5, #0          @ Suma total
+    mov r6, #0          @ Índice actual
+
+    @ Semilla para el generador de números aleatorios
+    mov r0, #0
+    bl time
+    bl srand
+
+generate_and_sum:
+    @ Generar número aleatorio
+    bl rand
+    and r7, r0, #0xFF   @ Limitar el número a 0-255 para este ejemplo
+
+    @ Sumar al total
+    add r5, r5, r7
+
+    @ Imprimir el número generado (opcional, para verificación)
+    ldr r0, =format_number
+    mov r1, r6
+    mov r2, r7
+    bl printf
+
+    @ Incrementar el índice y verificar si hemos generado 35 números
+    add r6, r6, #1
+    cmp r6, #35
+    blt generate_and_sum
+
+    @ Imprimir la suma total
+    ldr r0, =format_sum
+    mov r1, r5
+    bl printf
+
+    @ Salir del programa
+    mov r0, #0
+    pop {r4-r8, pc}

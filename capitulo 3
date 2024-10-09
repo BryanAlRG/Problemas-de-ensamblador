@@ -1,0 +1,28 @@
+.data
+result_msg: .asciz "La media aritmética de 60 y 68 es: %d\n"
+
+.text
+.global main
+
+main:
+    push {ip, lr}
+
+    @ Cargar los números 60 y 68 en registros
+    mov r0, #60
+    mov r1, #68
+
+    @ Sumar los números
+    add r2, r0, r1
+
+    @ Dividir la suma por 2
+    mov r3, #2
+    udiv r4, r2, r3  @ r4 = r2 / r3 (división sin signo)
+
+    @ Imprimir el resultado
+    ldr r0, =result_msg
+    mov r1, r4
+    bl printf
+
+    @ Salir del programa
+    mov r0, #0
+    pop {ip, pc}

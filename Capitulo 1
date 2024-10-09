@@ -1,43 +1,19 @@
-.section .data
-    fmt db "%d", 10, 0  // Formato de impresión, 10 es el salto de línea
+.text
+.global main
 
-.section .text
-    .global _start
+main:
+    push {ip, lr}        @ Guardar registros
 
-_start:
-    // Imprimir enteros del 9 al 43
-    mov x0, 9          // Iniciar desde 9
-print_loop1:
-    cmp x0, 44         // Comparar con 44 (finalizar en 43)
-    b.ge end_loop1     // Si es mayor o igual a 44, salir
-    // Llamada a printf
-    mov x1, x0         // Argumento para printf
-    ldr x2, =fmt       // Cargar dirección del formato
-    bl printf          // Llamar a printf
-    add x0, x0, 1      // Incrementar x0
-    b print_loop1      // Repetir el ciclo
-end_loop1:
+    mov r4, #9           @ Inicializar el contador con 9
 
-    // Imprimir enteros impares del 7 al 51
-    mov x0, 7          // Iniciar desde 7
-print_loop2:
-    cmp x0, 52         // Comparar con 52 (finalizar en 51)
-    b.ge end_loop2     // Si es mayor o igual a 52, salir
-    // Llamada a printf
-    mov x1, x0         // Argumento para printf
-    ldr x2, =fmt       // Cargar dirección del formato
-    bl printf          // Llamar a printf
-    add x0, x0, 2      // Incrementar x0 en 2 para obtener el siguiente impar
-    b print_loop2      // Repetir el ciclo
-end_loop2:
+loop:
+    mov r0, r4           @ Mover el número actual a r0 para imprimirlo
+    ldr r1, =format      @ Cargar la dirección del formato en r1
+    bl printf            @ Llamar a printf
 
-    // Salir del programa
-    mov x0, 0          // Código de salida
-    mov x8, 93         // syscall: exit
-    svc 0              // Llamada al sistema
+    add r4, r4, #1       @ Incrementar el contador
+    cmp r4, #44          @ Comparar con 44 (43 + 1)
+    bne loop             @ Si no es igual, continuar el bucle
 
-// Declaración de la función printf
-.global printf
-.extern printf
-//ejecutar
-./print_numbers
+    mov r0, #0           @ Código de salida 0
+    pop {ip, pc}         @ Restaurar registros y retornar
